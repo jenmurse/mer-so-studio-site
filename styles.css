@@ -200,11 +200,10 @@ a.li:hover .s { opacity: 0.6; }
 }
 
 .hero-attribution {
-  font-size: calc(1.05rem * var(--s-scale));
-  font-weight: var(--s-weight);
-  line-height: var(--s-lh);
-  letter-spacing: var(--s-tracking);
-  color: var(--sub);
+  font-size: 1.15rem;
+  font-weight: 400;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
 }
 
 .hero-attribution a {
