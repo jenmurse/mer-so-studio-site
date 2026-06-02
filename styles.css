@@ -194,6 +194,24 @@ a.li:hover .t,
 a.li:hover .n,
 a.li:hover .s { opacity: 0.6; }
 
+/* used in mock B + C */
+.hero-arrival {
+  color: var(--sub);
+}
+
+.hero-attribution {
+  font-size: calc(1.05rem * var(--s-scale));
+  font-weight: var(--s-weight);
+  line-height: var(--s-lh);
+  letter-spacing: var(--s-tracking);
+  color: var(--sub);
+}
+
+.hero-attribution a {
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
 /* ── ABOUT ──────────────────────────────────────────── */
 .about {
   margin-top: 80px;
