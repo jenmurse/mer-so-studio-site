@@ -23,6 +23,18 @@
   --accent: #2961F6;
   --sub:    rgba(26,26,26,0.4);
   --border: rgba(26,26,26,0.12);
+
+  --space-8:   8px;
+  --space-10:  10px;
+  --space-12:  12px;
+  --space-24:  24px;
+  --space-28:  28px;
+  --space-32:  32px;
+  --space-40:  40px;
+  --space-48:  48px;
+  --space-80:  80px;
+  --space-120: 120px;
+  --space-360: 360px;
 }
 
 /* ── RESET ──────────────────────────────────────────── */
@@ -62,6 +74,12 @@ body {
 
 a { color: inherit; text-decoration: none; }
 
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
 /* ── CURSOR ─────────────────────────────────────────── */
 #cursor {
   position: fixed;
@@ -79,18 +97,39 @@ a { color: inherit; text-decoration: none; }
   mix-blend-mode: difference;
 }
 
+/* ── SPIN BADGE ─────────────────────────────────────── */
+.spin-badge {
+  position: fixed;
+  right: var(--space-40);
+  top: var(--space-40);
+  width: var(--space-120);
+  height: var(--space-120);
+  animation: spin 14s linear infinite;
+}
+.spin-badge svg text {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0;
+  fill: var(--text);
+  text-transform: uppercase;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
 /* ── PAGE ───────────────────────────────────────────── */
 .page {
-  padding: 0 40px 32px;
+  padding: 0 var(--space-40) var(--space-32);
 }
 
 /* ── HERO GRID ──────────────────────────────────────── */
 .hero-grid {
   display: grid;
   grid-template-columns: 240px 1fr;
-  gap: 0 80px;
+  gap: 0 var(--space-80);
   align-items: start;
-  margin-bottom: 80px;
+  margin-bottom: var(--space-80);
 }
 
 .hero-left { padding-top: 0.1em; }
@@ -106,7 +145,7 @@ a { color: inherit; text-decoration: none; }
 .hero-right {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: var(--space-28);
 }
 
 .hero-primary {
@@ -134,7 +173,7 @@ a { color: inherit; text-decoration: none; }
 .list-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 0 120px;
+  gap: 0 var(--space-120);
   align-items: start;
 }
 
@@ -145,7 +184,7 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.13em;
   text-transform: uppercase;
   color: var(--accent);
-  margin-bottom: 10px;
+  margin-bottom: var(--space-10);
 }
 
 hr.div {
@@ -157,8 +196,8 @@ hr.div {
 .li {
   display: flex;
   align-items: baseline;
-  gap: 12px;
-  padding: 8px 0;
+  gap: var(--space-12);
+  padding: var(--space-8) 0;
   border-bottom: 1px solid var(--border);
 }
 
@@ -211,7 +250,7 @@ a.li:hover .s { opacity: 0.6; }
 
 /* ── ABOUT ──────────────────────────────────────────── */
 .about {
-  margin-top: 80px;
+  margin-top: var(--space-80);
 }
 
 .about p {
@@ -229,11 +268,11 @@ a.li:hover .s { opacity: 0.6; }
 
 /* ── FOOTER ─────────────────────────────────────────── */
 footer {
-  margin-top: 80px;
+  margin-top: var(--space-80);
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 24px;
+  gap: var(--space-24);
   flex-wrap: wrap;
 }
 
@@ -257,16 +296,16 @@ footer a:hover { opacity: 0.6; }
 }
 
 @media (max-width: 680px) {
-  .page { padding: 28px 28px 120px; }
-  .wordmark { top: 28px !important; left: 28px !important; }
+  .page { padding: var(--space-28) var(--space-28) var(--space-120); }
+  .wordmark { top: var(--space-28) !important; left: var(--space-28) !important; }
   .hero-attribution { font-size: 0.95rem !important; }
-  .list-grid { grid-template-columns: 1fr; gap: 40px 0; }
-  .about { margin-top: 48px; }
+  .list-grid { grid-template-columns: 1fr; gap: var(--space-40) 0; }
+  .about { margin-top: var(--space-48); }
   footer {
     left: 0 !important;
     right: 0 !important;
-    padding: 0 28px !important;
-    bottom: 28px !important;
+    padding: 0 var(--space-28) !important;
+    bottom: var(--space-28) !important;
   }
-  .spin-badge { width: 80px; height: 80px; right: 28px !important; top: 28px !important; }
+  .spin-badge { width: var(--space-80); height: var(--space-80); right: var(--space-28) !important; top: var(--space-28) !important; }
 }
