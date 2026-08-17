@@ -43,5 +43,5 @@ python3 -m http.server 8000
 
 ## Credit
 
-Design and build by Jen Murse. Typefaces are licensed from their foundries and are not covered by
-this repository.
+Design and build by [Jen Murse](https://jenmurse.com). Typefaces are licensed from their foundries
+and are not covered by this repository.
