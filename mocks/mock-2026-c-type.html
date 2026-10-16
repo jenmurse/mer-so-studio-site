@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mer So Studio — Mock C (type)</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #2961F6;
+      --text: #f4f4f2;
+      --font-sans: 'Satoshi', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --gutter: clamp(16px, 2.6vw, 40px);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--bg); }
+    body {
+      --sub: color-mix(in srgb, var(--text) 72%, transparent);
+      --rule: color-mix(in srgb, var(--text) 35%, transparent);
+      background: var(--bg);
+      color: var(--text);
+      transition: background-color 0.8s var(--ease), color 0.8s var(--ease);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 2px solid var(--text); outline-offset: 4px; }
+    img, video { display: block; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .mono { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* ── Top bar ── */
+    .bar {
+      position: fixed; inset: 0 0 auto 0; z-index: 30;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      padding: var(--gutter);
+      background: var(--bg);
+      transition: background-color 0.8s var(--ease);
+    }
+    .bar nav { justify-self: center; display: flex; gap: 24px; }
+    .bar .contact { justify-self: end; }
+    .bar a:hover { opacity: 0.6; }
+
+    /* ── Masthead: the name, sized to the width of the page ── */
+    .masthead { padding-top: clamp(72px, 11vh, 110px); }
+    .row { position: relative; display: flex; align-items: flex-end; padding: 0 var(--gutter); }
+    .row::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 1px;
+      background: var(--rule); transform-origin: left; transform: scaleX(0);
+      transition: transform 1.4s var(--ease);
+    }
+    .row.in::after { transform: scaleX(1); }
+    .row.right { justify-content: flex-end; }
+    .row .label { position: absolute; top: 1.1em; color: var(--sub); opacity: 0; transition: opacity 0.8s 0.5s; }
+    .row.in .label { opacity: 1; }
+    .row:not(.right) .label { right: var(--gutter); }
+    .row.right .label { left: var(--gutter); }
+
+    /* Clip only the bottom edge, so the slide-up reveal never trims a round letter's sides */
+    .giant, .fit {
+      line-height: 0.84;
+      letter-spacing: -0.045em;
+      font-weight: 500;
+      white-space: nowrap;
+      clip-path: inset(-40% -20% 0 -20%);
+      padding: 0 0.02em 0.05em;
+    }
+    .giant > span, .fit > span { display: inline-block; transform: translateY(110%); transition: transform 1.2s var(--ease); }
+    .in .giant > span, .fit.in > span { transform: none; }
+
+    /* ── Tagline ── */
+    .tagline { padding: clamp(56px, 10vh, 120px) var(--gutter) 0; }
+    .tagline p.big { font-size: clamp(2rem, 5.6vw, 6.4rem); line-height: 1; letter-spacing: -0.04em; font-weight: 500; max-width: 14em; }
+    .tagline p.small { margin-top: 20px; font-size: clamp(1rem, 1.6vw, 1.5rem); letter-spacing: -0.015em; color: var(--sub); }
+
+    /* ── About, filled word by word on scroll ── */
+    .about {
+      padding: clamp(96px, 16vh, 180px) var(--gutter);
+      display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: var(--gutter);
+    }
+    .about .mono { color: var(--sub); padding-top: 0.9em; }
+    .about .body { display: flex; flex-direction: column; gap: 1.1em; }
+    .about .body p { font-size: clamp(1.15rem, 1.75vw, 1.7rem); line-height: 1.3; letter-spacing: -0.02em; font-weight: 500; max-width: 34em; }
+    .about .body a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+    .about .w { opacity: 0.28; transition: opacity 0.25s linear; }
+    .about .w.lit { opacity: 1; }
+    .about a .w { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+
+    /* ── Work ── */
+    .work-head { display: flex; justify-content: space-between; padding: 18px var(--gutter); color: var(--sub); }
+    .item { padding: clamp(40px, 8vh, 96px) 0 clamp(80px, 14vh, 160px); }
+    .item a.head {
+      display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end;
+      gap: 12px var(--gutter);
+      padding: clamp(20px, 3vw, 40px) var(--gutter) clamp(16px, 2vw, 28px);
+    }
+    .item .name { grid-column: 1 / -1; font-size: 13vw; }
+    .item a.head:hover .name > span { transform: translateX(0.04em); }
+    .item .line { font-size: clamp(1rem, 1.5vw, 1.4rem); letter-spacing: -0.01em; }
+    .item .meta { display: flex; gap: 28px; color: var(--sub); white-space: nowrap; }
+    .item .meta .go { color: var(--text); border-bottom: 1px solid var(--text); }
+
+    /* The app's own frames, running past slowly */
+    .strip { overflow: hidden; }
+    .strip-track { display: flex; gap: 14px; width: max-content; animation: run 60s linear infinite; padding-left: var(--gutter); }
+    .strip:hover .strip-track { animation-play-state: paused; }
+    .strip img { height: clamp(240px, 30vw, 460px); width: auto; }
+    .strip.studiolo img { height: clamp(170px, 21vw, 320px); }
+    @keyframes run { to { transform: translateX(-50%); } }
+
+    .riso-row { padding: 22px var(--gutter) 0; color: var(--sub); display: flex; justify-content: space-between; }
+    [data-riso="off"] .riso-row { display: none; }
+
+    /* ── Footer ── */
+    footer { min-height: 62svh; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(96px, 16vh, 180px) 0 var(--gutter); }
+    .sign-top { display: flex; justify-content: space-between; align-items: end; gap: var(--gutter); padding: 0 var(--gutter) 18px; flex-wrap: wrap; }
+    .sign-top .email { font-size: clamp(1.6rem, 4vw, 4rem); letter-spacing: -0.03em; font-weight: 500; border-bottom: 2px solid transparent; }
+    .sign-top .email:hover { border-bottom-color: currentColor; }
+    .sign-top .mono { color: var(--sub); }
+
+
+    @media (max-width: 760px) {
+      .bar { grid-template-columns: 1fr 1fr; }
+      .bar nav { display: none; }
+      .about { grid-template-columns: 1fr; }
+      .item a.head { grid-template-columns: 1fr; }
+      .item .meta { flex-wrap: wrap; gap: 8px 20px; }
+      .row { flex-direction: column; align-items: flex-start; }
+      .row.right { align-items: flex-end; }
+      .row .label { position: static; display: block; padding: 10px 0 6px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .giant > span, .fit > span { transform: none; }
+      .row::after { transform: scaleX(1); }
+      .row .label { opacity: 1; }
+      .about .w { opacity: 1; }
+      .strip { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body data-riso="off">
+
+  <header class="bar mono">
+    <a href="#top" aria-label="Mer So Studio, top of page">Mer So Studio</a>
+    <nav aria-label="Sections"><a href="#work">Work</a><a href="#about">About</a></nav>
+    <a class="contact" href="mailto:hello@mersostudio.com">Contact</a>
+  </header>
+
+  <main id="top">
+    <h1 class="sr-only">Mer So Studio</h1>
+    <section class="masthead" aria-hidden="true" data-bg="blue" data-fg="stone">
+      <div class="row reveal"><div class="giant" data-fit><span>Mer So</span></div><span class="label mono">A design and product studio</span></div>
+      <div class="row right reveal"><div class="giant" data-fit-match><span>Studio</span></div><span class="label mono">San Francisco</span></div>
+    </section>
+
+    <section class="tagline" aria-label="Tagline" data-bg="blue" data-fg="stone">
+      <p class="big">Things that make the everyday worth noticing.</p>
+      <p class="small">Based in San Francisco</p>
+    </section>
+
+    <section class="about" id="about" aria-label="About" data-bg="stone" data-fg="blue">
+      <span class="mono">( About )</span>
+      <div class="body" data-words>
+        <p>Mer So is the independent design studio of <a href="https://jenmurse.com" target="_blank" rel="noopener">Jen Murse</a>, creating thoughtful products for everyday life, drawing on more than 20 years of experience designing across digital and physical mediums.</p>
+        <p>The work begins with small moments that deserve more attention, like a few quiet minutes of reflection at the end of the week or the pile of inspiration saved for later. The intention is to make the everyday worth noticing, whether on a screen, on paper, or in something you can hold.</p>
+        <p>Everything is made at a small scale, with care for the people who use it.</p>
+      </div>
+    </section>
+
+    <section class="work" id="work" aria-labelledby="work-h">
+      <div class="work-head mono"><h2 id="work-h" style="font: inherit">( Work )</h2><span>2026</span></div>
+
+      <article class="item reveal" data-bg="ink" data-fg="stone">
+        <a class="head" href="https://quietsurface.app" target="_blank" rel="noopener">
+          <h3 class="name fit"><span>Quiet Surface</span></h3>
+          <p class="line">A few quiet minutes at the end of each week.</p>
+          <p class="meta mono"><span>iPhone · Free</span><span class="go">quietsurface.app ↗</span></p>
+        </a>
+        <div class="strip" role="img" aria-label="Quiet Surface's App Store screens: the weekly surface, patterns over time, themes in your own words, reflection and ideas, and dark mode.">
+          <div class="strip-track" data-dupe>
+            <img src="assets/qs-frame-01-surface.jpg" alt=""><img src="assets/qs-frame-02-patterns.jpg" alt=""><img src="assets/qs-frame-03-themes.jpg" alt=""><img src="assets/qs-frame-04-reflect.jpg" alt=""><img src="assets/qs-frame-05-dark.jpg" alt="">
+          </div>
+        </div>
+      </article>
+
+      <article class="item reveal" data-bg="stone" data-fg="blue">
+        <a class="head" href="https://www.withstudiolo.com" target="_blank" rel="noopener">
+          <h3 class="name fit"><span>Studiolo</span></h3>
+          <p class="line">Everything you saved, in its right place.</p>
+          <p class="meta mono"><span>Mac · Private alpha</span><span class="go">Join the waitlist ↗</span></p>
+        </a>
+        <div class="strip studiolo" role="img" aria-label="Studiolo on a Mac: the library, colour search, related results, notes on the canvas, saving from the browser and from an iPhone.">
+          <div class="strip-track" data-dupe>
+            <img src="assets/st-still-library-scroll.jpg" alt=""><img src="assets/st-still-colour-search.jpg" alt=""><img src="assets/st-still-canvas-notes.jpg" alt=""><img src="assets/st-still-search-related.jpg" alt=""><img src="assets/st-still-clip-from-browser.jpg" alt=""><img src="assets/st-still-iphone-share.jpg" alt="">
+          </div>
+        </div>
+      </article>
+
+      <div class="riso-row mono"><span>Riso prints and calendars</span><span>Later</span></div>
+    </section>
+  </main>
+
+  <footer data-bg="blue" data-fg="stone">
+    <div class="sign-top">
+      <a class="email" href="mailto:hello@mersostudio.com">hello@mersostudio.com</a>
+      <span class="mono">© 2026 · Mer So Studio, LLC</span>
+    </div>
+  </footer>
+
+  <script>
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Size the name to the page width, so nothing runs off the edge
+    const fit = () => {
+      const avail = document.documentElement.clientWidth - 2 * parseFloat(getComputedStyle(document.querySelector('.row')).paddingLeft);
+      let size = 0;
+      document.querySelectorAll('[data-fit]').forEach((el) => {
+        el.style.fontSize = '100px';
+        const w = el.querySelector('span').getBoundingClientRect().width;
+        const s = Math.floor(100 * avail / w * 0.98);
+        el.style.fontSize = s + 'px';
+        if (el.closest('.masthead')) size = s;
+      });
+      document.querySelectorAll('[data-fit-match]').forEach((el) => { el.style.fontSize = size + 'px'; });
+    };
+    document.fonts.ready.then(fit);
+    addEventListener('resize', fit);
+    fit();
+
+    // Reveal rows as they enter
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        setTimeout(() => e.target.classList.add('in'), e.target.dataset.delay || 0);
+        e.target.querySelectorAll('.fit').forEach((f) => f.classList.add('in'));
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.2 });
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      if (el.closest('.masthead')) el.dataset.delay = 120 + i * 180;
+      if (reduced) { el.classList.add('in'); el.querySelectorAll('.fit').forEach((f) => f.classList.add('in')); }
+      else io.observe(el);
+    });
+
+    // About: words light as the reading line passes
+    const p = document.querySelector('[data-words]');
+    const wrapWords = (node) => {
+      [...node.childNodes].forEach((n) => {
+        if (n.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          n.textContent.split(/(\s+)/).forEach((t) => {
+            if (!t) return;
+            if (/^\s+$/.test(t)) frag.append(t);
+            else { const s = document.createElement('span'); s.className = 'w'; s.textContent = t; frag.append(s); }
+          });
+          n.replaceWith(frag);
+        } else wrapWords(n);
+      });
+    };
+    wrapWords(p);
+    const words = [...p.querySelectorAll('.w')];
+    const light = () => { const line = innerHeight * 0.66; words.forEach((w) => w.classList.toggle('lit', w.getBoundingClientRect().top < line)); };
+    if (!reduced) { addEventListener('scroll', light, { passive: true }); light(); }
+
+    // Strips loop seamlessly: double their contents
+    document.querySelectorAll('[data-dupe]').forEach((t) => { if (!reduced) t.innerHTML += t.innerHTML; });
+
+    // Colour blocks: the page takes the colours of whatever is in the middle of the screen
+    const C = { blue: '#2961F6', stone: '#f4f4f2', ink: '#121211' };
+    const blocks = [...document.querySelectorAll('[data-bg]')];
+    const setColours = () => {
+      const mid = innerHeight * 0.5;
+      const atEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
+      const cur = atEnd ? blocks[blocks.length - 1] : (blocks.find((b) => {
+        const r = b.getBoundingClientRect();
+        return r.top <= mid && r.bottom > mid;
+      }) || blocks.filter((b) => b.getBoundingClientRect().top <= mid).pop() || blocks[0]);
+      document.body.style.setProperty('--bg', C[cur.dataset.bg]);
+      document.body.style.setProperty('--text', C[cur.dataset.fg]);
+    };
+    addEventListener('scroll', setColours, { passive: true });
+    setColours();
+  </script>
+</body>
+</html>

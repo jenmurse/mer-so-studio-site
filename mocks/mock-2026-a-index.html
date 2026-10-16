@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mer So Studio — Mock 2026 A (index)</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .wordmark {
+      position: absolute;
+      top: var(--space-40);
+      left: var(--space-40);
+      z-index: 10;
+    }
+    .hero-right {
+      max-width: 820px;
+      padding-top: clamp(var(--space-80), 30vh, var(--space-360));
+    }
+    .hero-attribution { margin-top: var(--space-28); display: flex; flex-direction: column; gap: 0.9em; max-width: 40em; }
+
+    /* The index: small type, one row per thing. The size is the point:
+       jenmurse.com's Playground leads with huge names, Mer So does not. */
+    .index {
+      margin-top: var(--space-120);
+      max-width: 1120px;
+    }
+    .index-label {
+      font-family: var(--font-mono);
+      font-size: 0.58rem;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: var(--space-12);
+    }
+    .index ul { list-style: none; border-top: 1px solid var(--border); }
+    .index li { border-bottom: 1px solid var(--border); }
+
+    .row {
+      display: grid;
+      grid-template-columns: 48px minmax(140px, 1fr) minmax(0, 2fr) 170px 150px;
+      gap: var(--space-24);
+      align-items: center;
+      padding: var(--space-24) 0;
+    }
+    a.row { transition: opacity 0.12s; }
+    a.row:hover { opacity: 0.6; }
+
+    .row-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 11px; /* the app icon's own shape, not page chrome */
+      display: block;
+    }
+    .row-icon.placeholder {
+      border: 1px dashed var(--border);
+      border-radius: 0;
+    }
+    .row-name {
+      font-size: 1.15rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+    }
+    .row-line {
+      font-size: 1.15rem;
+      font-weight: 400;
+      letter-spacing: -0.01em;
+    }
+    .row-meta,
+    .row-link {
+      font-family: var(--font-mono);
+      font-size: 0.66rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .row-meta { color: var(--accent); }
+    .row-link { text-align: right; }
+    .row.muted .row-name,
+    .row.muted .row-line { color: var(--sub); }
+
+    footer {
+      margin-top: var(--space-120);
+      padding-bottom: var(--space-40);
+    }
+
+    [data-riso="off"] .riso { display: none; }
+
+    @media (max-width: 860px) {
+      .row {
+        grid-template-columns: 48px 1fr;
+        grid-template-areas:
+          "icon name"
+          "icon line"
+          "icon meta"
+          "icon link";
+        gap: 4px var(--space-24);
+        align-items: start;
+      }
+      .row-icon { grid-area: icon; }
+      .row-name { grid-area: name; }
+      .row-line { grid-area: line; }
+      .row-meta { grid-area: meta; margin-top: var(--space-8); }
+      .row-link { grid-area: link; text-align: left; }
+    }
+    @media (max-width: 680px) {
+      .hero-right { padding-top: var(--space-120); }
+      footer { padding: 0 0 var(--space-28) !important; }
+      .index { margin-top: var(--space-80); }
+    }
+  </style>
+</head>
+<body data-riso="off">
+
+  <div id="cursor" aria-hidden="true"></div>
+
+  <header>
+    <a href="/" class="wordmark" aria-label="Mer So Studio, home">Mer So Studio</a>
+  </header>
+
+  <main class="page">
+
+    <section aria-label="About">
+      <div class="hero-right">
+        <p class="hero-primary">Things that make the everyday worth noticing.</p>
+        <div class="hero-attribution">
+          <p>Mer So is the independent design studio of <a href="https://jenmurse.com" target="_blank" rel="noopener">Jen Murse</a>, creating thoughtful products for everyday life, drawing on more than 20 years of experience designing across digital and physical mediums.</p>
+          <p>The work begins with small moments that deserve more attention, like a few quiet minutes of reflection at the end of the week or the pile of inspiration saved for later. The intention is to make the everyday worth noticing, whether on a screen, on paper, or in something you can hold.</p>
+          <p>Everything is made at a small scale, with care for the people who use it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="index" aria-labelledby="index-label">
+      <h2 class="index-label" id="index-label">The work</h2>
+      <ul>
+        <li>
+          <a class="row" href="https://quietsurface.app" target="_blank" rel="noopener">
+            <img class="row-icon" src="assets/qs-icon.png" alt="">
+            <span class="row-name">Quiet Surface</span>
+            <span class="row-line">A few quiet minutes at the end of each week.</span>
+            <span class="row-meta">iPhone · Free</span>
+            <span class="row-link">quietsurface.app ↗</span>
+          </a>
+        </li>
+        <li>
+          <a class="row" href="https://www.withstudiolo.com" target="_blank" rel="noopener">
+            <img class="row-icon" src="assets/studiolo-icon.png" alt="">
+            <span class="row-name">Studiolo</span>
+            <span class="row-line">Everything you saved, in its right place.</span>
+            <span class="row-meta">Mac · Private alpha</span>
+            <span class="row-link">Join the waitlist ↗</span>
+          </a>
+        </li>
+        <li class="riso">
+          <div class="row muted">
+            <span class="row-icon placeholder" aria-hidden="true"></span>
+            <span class="row-name">Riso</span>
+            <span class="row-line">Prints and calendars, made by hand in San Francisco.</span>
+            <span class="row-meta">Later</span>
+            <span class="row-link"></span>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <footer>
+      <span class="foot-left">© 2026 · Mer So Studio, LLC</span>
+      <a class="foot-right" href="mailto:hello@mersostudio.com">hello@mersostudio.com</a>
+    </footer>
+
+  </main>
+
+  <script src="../main.js"></script>
+  <script>
+    // Mock-only: show or hide the riso row.
+  </script>
+</body>
+</html>

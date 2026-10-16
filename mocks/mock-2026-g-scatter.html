@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mer So Studio — Mock G (scattered type, letters leave)</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --stone: #f4f4f2;
+      --ink: #121211;
+      --blue: #2961F6;
+      --hole: #0d0d0d;
+      --bg: var(--stone);
+      --fg: var(--ink);
+      --font-sans: 'Satoshi', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --gutter: clamp(16px, 2.6vw, 40px);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      /* Large Satoshi sits a little in from its box; pull it back to the gutter */
+      --optical: -0.06em;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--stone); }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+      transition: background-color 0.9s var(--ease), color 0.9s var(--ease);
+    }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    img, video { display: block; }
+    .mono { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; line-height: 1.5; }
+    .small { font-size: clamp(0.95rem, 1.15vw, 1.1rem); line-height: 1.4; font-weight: 400; letter-spacing: -0.005em; }
+    .mid { font-size: clamp(1.2rem, 1.9vw, 1.85rem); line-height: 1.2; font-weight: 400; letter-spacing: -0.02em; }
+
+    /* ── The corners, Concrete Club style: who on the left, where and the way around on the right ── */
+    .chrome { position: fixed; inset: 0; z-index: 30; pointer-events: none; transition: color 0.4s; }
+    .chrome a { pointer-events: auto; }
+    .chrome a:hover { opacity: 0.6; }
+    .who { position: absolute; top: var(--gutter); left: var(--gutter); max-width: 25em; }
+    .who a { pointer-events: auto; }
+    .where { position: absolute; top: var(--gutter); right: var(--gutter); text-align: right; }
+    .where nav { display: flex; gap: 0.5em; justify-content: flex-end; }
+    .where nav a:not(:last-child)::after { content: ","; }
+    /* A small marker that names the screen you're on; it moves between screens */
+    .marker { position: absolute; text-align: center; white-space: pre-line; transition: left 0.8s var(--ease), top 0.8s var(--ease), opacity 0.4s; }
+
+    /* The hole: one black disc. It is the o in Mer So, then each app's circle */
+    .hole {
+      position: fixed; left: 0; top: 0; z-index: 0;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: var(--hole);
+      transform-origin: 0 0; transform: scale(0);
+      pointer-events: none; will-change: transform;
+    }
+    main { position: relative; z-index: 1; }
+
+    /* ── Intro: held in place while the letters leave and the o goes to work ── */
+    .intro { height: 230vh; position: relative; }
+    .intro .stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+    .intro .tag { position: absolute; left: 30%; top: 44%; max-width: 15em; transition: opacity 0.3s; }
+    .big-name {
+      position: absolute; left: var(--gutter); bottom: clamp(20px, 4vh, 48px);
+      margin-left: var(--optical);
+      display: flex; align-items: baseline;
+      font-weight: 500; letter-spacing: -0.05em; line-height: 0.8; white-space: nowrap;
+    }
+    .ltr { display: inline-block; will-change: transform; clip-path: inset(-60% -60% 0 -60%); }
+    .ltr > span { display: inline-block; transform: translateY(105%); transition: transform 1.2s var(--ease); }
+    .loaded .ltr > span { transform: none; }
+    .ltr:nth-child(2) > span { transition-delay: 0.06s; }
+    .ltr:nth-child(3) > span { transition-delay: 0.12s; }
+    .ltr:nth-child(5) > span { transition-delay: 0.18s; }
+
+    /* ── Apps: the hole widens, the veil lifts, the work runs past ── */
+    .app { height: 460vh; position: relative; }
+    .app .stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+    .window { position: absolute; inset: 0; background: var(--hole); clip-path: circle(0 at 50% 50%); will-change: clip-path; overflow: hidden; }
+    .track {
+      position: absolute; top: 47%; left: 0;
+      display: flex; align-items: center; gap: clamp(14px, 2vw, 32px);
+      transform: translate3d(0, -50%, 0);
+      will-change: transform;
+    }
+    .track video { flex: none; width: auto; }
+    .track.qs video { height: 50svh; }
+    .track.studiolo video { height: 38svh; }
+    .veil { position: absolute; inset: 0; background: var(--hole); pointer-events: none; }
+
+    .app h2 {
+      position: absolute; left: var(--gutter); bottom: clamp(20px, 4vh, 48px); z-index: 2;
+      margin-left: var(--optical);
+      font-size: clamp(2.6rem, 9vw, 10.4rem); font-weight: 500; letter-spacing: -0.05em; line-height: 0.82;
+      color: var(--title, currentColor); transition: color 0.5s; pointer-events: none;
+    }
+    .app .note { position: absolute; z-index: 2; color: var(--title, currentColor); transition: color 0.5s; display: flex; flex-direction: column; gap: 6px; }
+    #qs .note { right: var(--gutter); bottom: clamp(24px, 5vh, 56px); text-align: right; align-items: flex-end; }
+    #studiolo .note { left: 64%; top: 70%; }
+    .note a { align-self: inherit; border-bottom: 1px solid currentColor; padding-bottom: 1px; }
+    .note a:hover { opacity: 0.6; }
+
+    /* ── About: a few lines, set in different places ── */
+    .about { height: 100svh; position: relative; }
+    .about .bit { position: absolute; max-width: 22em; }
+    .about .bit a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+    .about .b1 { left: 30%; top: 15%; }
+    .about .b2 { left: 9%; top: 43%; max-width: 24em; }
+    .about .b3 { left: 62%; top: 72%; max-width: 16em; }
+    footer {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      padding: var(--gutter);
+    }
+    footer a:hover { opacity: 0.6; }
+
+    @media (max-width: 760px) {
+      .who { max-width: 54vw; }
+      .where { max-width: 34vw; }
+      .where nav a:not(:last-child) { display: none; }
+      .marker { display: none; }
+      .intro .tag { left: var(--gutter); top: 34%; }
+      .track.qs video { height: 44svh; }
+      .track.studiolo video { height: 26svh; }
+      #studiolo .note { left: auto; right: var(--gutter); top: auto; bottom: 30%; text-align: right; align-items: flex-end; }
+      #qs .note { bottom: auto; top: 22%; }
+      .about { height: auto; min-height: 100svh; display: flex; flex-direction: column; gap: 28px; justify-content: center; padding: 140px var(--gutter) 100px; }
+      .about .bit { position: static; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body, .chrome, .app h2, .app .note { transition: none; }
+      .ltr > span { transition: none; transform: none; }
+      .hole, .veil { display: none; }
+      .intro, .app { height: auto; }
+      .intro .stage { position: relative; }
+      .app .stage { position: relative; }
+      .window { position: relative; clip-path: none; height: 100%; overflow-x: auto; }
+      .track { position: relative; top: auto; transform: none; height: 100%; padding: 0 var(--gutter); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="chrome" id="chrome">
+    <p class="who small"><a href="#top">Mer So</a> is the independent design studio of Jen Murse, creating thoughtful products for everyday life.</p>
+    <div class="where small">
+      <p>San Francisco · <time id="clock">—</time></p>
+      <nav aria-label="Sections"><a href="#qs">Work</a><a href="#about">About</a><a href="mailto:hello@mersostudio.com">Contact</a></nav>
+    </div>
+    <p class="marker mono" id="marker" aria-hidden="true"></p>
+  </header>
+
+  <div class="hole" aria-hidden="true"></div>
+
+  <main id="top">
+    <section class="intro" data-bg="stone" data-fg="ink" data-marker="Mer So Studio&#10;&#10;Selected work&#10;2026" data-mx="64" data-my="26">
+      <div class="stage">
+        <p class="tag mid">Things that make the everyday worth noticing.</p>
+        <h1 class="big-name" id="big-name" aria-label="Mer So"><span class="ltr" aria-hidden="true"><span>M</span></span><span class="ltr" aria-hidden="true"><span>e</span></span><span class="ltr" aria-hidden="true"><span>r</span></span><span class="ltr sp" aria-hidden="true"><span>&nbsp;</span></span><span class="ltr" aria-hidden="true"><span>S</span></span><span class="ltr o" id="the-o" aria-hidden="true"><span>o</span></span></h1>
+      </div>
+    </section>
+
+    <section class="app" id="qs" data-bg="blue" data-fg="stone" data-marker="Mer So Studio&#10;&#10;Work&#10;1–2" data-mx="64" data-my="26" aria-labelledby="qs-h">
+      <div class="stage">
+        <div class="window">
+          <div class="track qs" role="img" aria-label="Quiet Surface on iPhone: rating the week, keeping ideas, what keeps coming up, and the weekly reminder on the home screen.">
+            <video src="assets/qs-clip-1.mp4" poster="assets/qs-clip-1.jpg" muted loop playsinline></video>
+            <video src="assets/qs-clip-2.mp4" poster="assets/qs-clip-2.jpg" muted loop playsinline></video>
+            <video src="assets/qs-clip-3.mp4" poster="assets/qs-clip-3.jpg" muted loop playsinline></video>
+            <video src="assets/qs-clip-4.mp4" poster="assets/qs-clip-4.jpg" muted loop playsinline></video>
+          </div>
+          <div class="veil"></div>
+        </div>
+        <h2 id="qs-h">Quiet Surface</h2>
+        <div class="note">
+          <p class="mid">A weekly reflection app</p>
+          <p class="mono">iPhone · Free</p>
+          <a class="mono" href="https://quietsurface.app" target="_blank" rel="noopener">quietsurface.app ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="app" id="studiolo" data-bg="stone" data-fg="ink" data-open-fg="stone" data-marker="Mer So Studio&#10;&#10;Work&#10;2–2" data-mx="22" data-my="14" aria-labelledby="st-h">
+      <div class="stage">
+        <div class="window">
+          <div class="track studiolo" role="img" aria-label="Studiolo: saved images sorted out of the inbox, a page saved from the browser, searching by colour, and notes on a canvas.">
+            <video src="assets/inbox-sort.mp4" poster="assets/inbox-sort-poster.jpg" muted loop playsinline></video>
+            <video src="assets/clip-from-browser.mp4" poster="assets/clip-from-browser-poster.jpg" muted loop playsinline></video>
+            <video src="assets/colour-search.mp4" poster="assets/colour-search-poster.jpg" muted loop playsinline></video>
+            <video src="assets/canvas-notes.mp4" poster="assets/canvas-notes-poster.jpg" muted loop playsinline></video>
+          </div>
+          <div class="veil"></div>
+        </div>
+        <h2 id="st-h">Studiolo</h2>
+        <div class="note">
+          <p class="mid">A visual reference app</p>
+          <p class="mono">Mac · Private alpha</p>
+          <a class="mono" href="https://www.withstudiolo.com" target="_blank" rel="noopener">Join the waitlist ↗</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about" data-bg="ink" data-fg="stone" data-marker="Mer So Studio&#10;&#10;About" data-mx="72" data-my="42" aria-labelledby="about-h">
+      <h2 class="sr-only" id="about-h" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">About</h2>
+      <p class="bit b1 mid">Mer So is the independent design studio of <a href="https://jenmurse.com" target="_blank" rel="noopener">Jen Murse</a>, creating thoughtful products for everyday life, drawing on more than 20 years of experience designing across digital and physical mediums.</p>
+      <p class="bit b2 mid">The work begins with small moments that deserve more attention, like a few quiet minutes of reflection at the end of the week or the pile of inspiration saved for later. The intention is to make the everyday worth noticing, whether on a screen, on paper, or in something you can hold.</p>
+      <p class="bit b3 mid">Everything is made at a small scale, with care for the people who use it.</p>
+      <footer class="mono">
+        <span>© 2026 · Mer So Studio, LLC</span>
+        <a href="mailto:hello@mersostudio.com">hello@mersostudio.com</a>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const C = { stone: '#f4f4f2', ink: '#121211', blue: '#2961F6' };
+    const body = document.body;
+    const clamp = (v) => Math.min(1, Math.max(0, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const easeIO = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+    const easeInBack = (t) => { const c = 1.9; return (c + 1) * t * t * t - c * t * t; };   // a small dip, then away
+    const spring = (t) => 1 - Math.cos(t * Math.PI * 2.5) * Math.exp(-6 * t);
+
+    // The studio's local time
+    const clock = document.getElementById('clock');
+    const fmt = new Intl.DateTimeFormat('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/Los_Angeles' });
+    const tick = () => { clock.textContent = fmt.format(new Date()); };
+    tick(); setInterval(tick, 30000);
+
+    // Fit the name to the page width
+    const name = document.getElementById('big-name');
+    const theO = document.getElementById('the-o');
+    const letters = [...name.querySelectorAll('.ltr:not(.sp):not(.o)')];
+    let oGlyph = null; // the o's ink box: centre x, centre y from the span's top, radius
+    const fit = () => {
+      const avail = document.documentElement.clientWidth - 2 * parseFloat(getComputedStyle(document.querySelector('.who')).left);
+      name.style.fontSize = '100px';
+      const w = [...name.children].reduce((s, c) => s + c.getBoundingClientRect().width, 0);
+      const size = Math.min(Math.floor(100 * avail / w * 1.02), Math.floor(innerHeight * 0.62));
+      name.style.fontSize = size + 'px';
+      // Measure the o itself, so the disc fills exactly the letter
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = `500 ${size}px Satoshi`;
+      const m = ctx.measureText('o');
+      oGlyph = {
+        cx: (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2,
+        // each letter is its own box sized by the line height, so find the baseline from that:
+        // half the leading, then the font's ascent, then up to the middle of the o
+        cyFrom: (lineH) => (lineH - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2 + m.fontBoundingBoxAscent - (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2,
+        r: Math.max(m.actualBoundingBoxRight + m.actualBoundingBoxLeft, m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) / 2,
+      };
+    };
+
+    // Which screen are we on: colours, and the little marker
+    const blocks = [...document.querySelectorAll('[data-bg]')];
+    const marker = document.getElementById('marker');
+    let lastBlock = null;
+    const setColours = () => {
+      const mid = innerHeight * 0.5;
+      const atEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
+      const cur = atEnd ? blocks[blocks.length - 1] : (blocks.find((b) => {
+        const r = b.getBoundingClientRect();
+        return r.top <= mid && r.bottom > mid;
+      }) || blocks[0]);
+      body.style.setProperty('--bg', C[cur.dataset.bg]);
+      body.style.setProperty('--fg', C[cur.dataset.fg]);
+      if (cur !== lastBlock) {
+        lastBlock = cur;
+        marker.textContent = cur.dataset.marker;
+        marker.style.left = cur.dataset.mx + '%';
+        marker.style.top = cur.dataset.my + 'vh';
+      }
+    };
+
+    // One hole, start to finish
+    const hole = document.querySelector('.hole');
+    const chrome = document.getElementById('chrome');
+    const intro = document.querySelector('.intro');
+    const tag = intro.querySelector('.tag');
+    const apps = [...document.querySelectorAll('.app')];
+    const placeHole = (cx, cy, r) => { hole.style.transform = `translate3d(${cx - r}px, ${cy - r}px, 0) scale(${r / 100})`; };
+
+    const run = () => {
+      const w = innerWidth, h = innerHeight;
+      const r0 = Math.min(w, h) * 0.21;          // the circle each app starts from
+      const r1 = Math.hypot(w, h) / 2;          // big enough to cover the corners
+      let pinned = null, covered = false;
+
+      // The intro: letters leave one after another, up and away to the left, like a run of notes
+      const ir = intro.getBoundingClientRect();
+      const p = clamp(-ir.top / (ir.height - h));
+      letters.forEach((el, i) => {
+        const t = clamp((p - (0.2 + i * 0.075)) / 0.42);
+        const rise = easeInBack(t) * -(h * (0.9 + i * 0.12));
+        const drift = -easeIO(t) * (w * (0.16 + (letters.length - 1 - i) * 0.1));
+        el.style.transform = `translate3d(${drift}px, ${rise}px, 0)`;
+      });
+      tag.style.opacity = String(1 - clamp(p / 0.18));
+
+      apps.forEach((a) => {
+        const rect = a.getBoundingClientRect();
+        const isPinned = rect.top <= 0 && rect.bottom >= h;
+        const t = clamp(-rect.top / (rect.height - h));
+        const open = easeIO(clamp(t / 0.28));
+        const close = easeIO(clamp((t - 0.9) / 0.1));          // shrinks back to the hole at the end
+        const lift = clamp((t - 0.1) / 0.18) * (1 - close);
+        const slide = easeIO(clamp((t - 0.28) / 0.6));
+        const radius = isPinned ? lerp(lerp(r0, r1, open), r0, close) : 0;
+        a.querySelector('.window').style.clipPath = `circle(${radius}px at 50% 50%)`;
+        a.querySelector('.veil').style.opacity = String(1 - lift);
+        const track = a.querySelector('.track');
+        const first = track.firstElementChild, last = track.lastElementChild;
+        const startX = w / 2 - (first.offsetLeft + first.offsetWidth / 2);
+        const endX = w / 2 - (last.offsetLeft + last.offsetWidth / 2);
+        track.style.transform = `translate3d(${lerp(startX, endX, slide)}px, -50%, 0)`;
+        const isCovered = isPinned && open > 0.7 && close < 0.3;
+        if (a.dataset.openFg) a.querySelector('.stage').style.setProperty('--title', isCovered ? C[a.dataset.openFg] : C[a.dataset.fg]);
+        if (isPinned) pinned = a;
+        if (isCovered) covered = true;
+      });
+      chrome.style.color = covered ? C.stone : '';
+
+      if (pinned || !oGlyph) { hole.style.transform = 'scale(0)'; return; }
+      const lastApp = apps[apps.length - 1];
+      const lastEnd = lastApp.offsetTop + lastApp.offsetHeight - h;
+      if (ir.bottom >= h) {
+        // The o: fills from the inside, then glides to the middle and grows into the first circle
+        const o = theO.getBoundingClientRect();
+        const fill = easeIO(clamp(p / 0.22));
+        const travel = easeIO(clamp((p - 0.3) / 0.62));
+        theO.style.opacity = travel > 0 ? '0' : '1';
+        placeHole(lerp(o.left + oGlyph.cx, w / 2, travel), lerp(o.top + oGlyph.cyFrom(o.height), h / 2, travel), lerp(oGlyph.r * fill, r0, travel));
+      } else if (scrollY <= lastEnd) {
+        placeHole(w / 2, h / 2, r0);                          // waiting in the middle between screens
+      } else {
+        const k = easeIO(clamp((scrollY - lastEnd) / (h * 0.6)));
+        placeHole(w / 2, h / 2, r0 * (1 - k));                // closes up before the last screen
+      }
+    };
+
+    // Clips play only while their section is on screen
+    if (!reduced) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => e.target.querySelectorAll('video').forEach((v) => e.isIntersecting ? v.play().catch(() => {}) : v.pause()));
+      }, { threshold: 0.05 });
+      apps.forEach((a) => io.observe(a));
+    }
+
+    const onScroll = () => { setColours(); if (!reduced) run(); };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', () => { fit(); onScroll(); });
+    document.fonts.ready.then(() => {
+      fit(); onScroll();
+      requestAnimationFrame(() => body.classList.add('loaded'));
+    });
+    addEventListener('load', onScroll);
+    fit(); onScroll();
+  </script>
+</body>
+</html>

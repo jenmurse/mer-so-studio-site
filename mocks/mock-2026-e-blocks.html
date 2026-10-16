@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mer So Studio — Mock E (colour blocks)</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --stone: #f4f4f2;
+      --ink: #121211;
+      --blue: #2961F6;
+      --hole: #0d0d0d;
+      --bg: var(--stone);
+      --fg: var(--ink);
+      --font-sans: 'Satoshi', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --gutter: clamp(16px, 2.6vw, 40px);
+      --top: calc(var(--gutter) * 2 + 1.4rem);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      /* Large Satoshi sits a little in from its box; pull it back to the gutter */
+      --optical: -0.06em;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--stone); }
+    body {
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-sans);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: clip;
+      transition: background-color 0.9s var(--ease), color 0.9s var(--ease);
+    }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    img, video { display: block; }
+    .mono { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; }
+    .small { font-size: clamp(0.95rem, 1.15vw, 1.1rem); line-height: 1.4; font-weight: 400; letter-spacing: -0.005em; }
+
+    /* ── Header: wordmark, sections, contact in the corner ── */
+    header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: baseline;
+      padding: var(--gutter);
+    }
+    header nav { display: flex; gap: 24px; }
+    header .contact { justify-self: end; }
+    header a:hover { opacity: 0.6; }
+
+    /* The hole: one black disc. It fills the o, then becomes each app's circle */
+    .hole {
+      position: fixed; left: 0; top: 0; z-index: 0;
+      width: 200px; height: 200px; border-radius: 50%;
+      background: var(--hole);
+      transform-origin: 0 0; transform: scale(0);
+      pointer-events: none; will-change: transform;
+    }
+    main { position: relative; z-index: 1; }
+
+    /* ── Intro: small type in its places, the name at the foot ── */
+    .intro {
+      min-height: 100svh; position: relative;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: var(--top) var(--gutter) clamp(24px, 4vh, 48px);
+    }
+    .intro-small { display: grid; grid-template-columns: 1fr 1fr; column-gap: var(--gutter); }
+    .intro-small .who { max-width: 24em; }
+    .intro-small .where { display: flex; flex-direction: column; gap: 0.2em; }
+    .intro-small p { opacity: 0; transition: opacity 1s 0.7s; }
+    .loaded .intro-small p { opacity: 1; }
+    .big-name {
+      margin-left: var(--optical);
+      font-weight: 500; letter-spacing: -0.05em; line-height: 0.8; white-space: nowrap;
+      clip-path: inset(-40% -20% 0 -20%); padding-bottom: 0.03em;
+    }
+    .big-name > span { display: inline-block; transform: translateY(110%); transition: transform 1.3s var(--ease); }
+    .loaded .big-name > span { transform: none; }
+
+    /* ── Apps: the hole widens, the veil lifts, the work runs past ── */
+    .app { height: 460vh; position: relative; }
+    .stage { position: sticky; top: 0; height: 100svh; overflow: hidden; }
+    .window { position: absolute; inset: 0; background: var(--hole); clip-path: circle(0 at 50% 50%); will-change: clip-path; overflow: hidden; }
+    .track {
+      position: absolute; top: 58%; left: 0;
+      display: flex; align-items: center; gap: clamp(14px, 2vw, 32px);
+      transform: translate3d(0, -50%, 0);
+      will-change: transform;
+    }
+    .track video { flex: none; width: auto; }
+    .track.qs video { height: 52svh; border-radius: 0; }
+    .track.studiolo video { height: 40svh; }
+    .veil { position: absolute; inset: 0; background: var(--hole); pointer-events: none; }
+
+    .app-title {
+      position: absolute; left: var(--gutter); right: var(--gutter); top: var(--top); z-index: 2;
+      display: flex; justify-content: space-between; align-items: baseline;
+      color: var(--title, currentColor); transition: color 0.5s; pointer-events: none;
+    }
+    .app-title h2 { margin-left: var(--optical); font-size: clamp(2.4rem, 6.4vw, 7.4rem); font-weight: 500; letter-spacing: -0.05em; line-height: 0.9; }
+    .app-foot {
+      position: absolute; left: var(--gutter); right: var(--gutter); bottom: clamp(20px, 4vh, 40px); z-index: 2;
+      display: flex; justify-content: space-between; align-items: baseline; gap: 16px;
+      color: var(--title, currentColor); transition: color 0.5s;
+    }
+    .app-foot .right { display: flex; gap: 28px; align-items: baseline; }
+    .app-foot a { border-bottom: 1px solid currentColor; padding-bottom: 2px; }
+    .app-foot a:hover { opacity: 0.6; }
+
+    /* ── About, with the footer at its foot ── */
+    .about {
+      min-height: 100svh; position: relative;
+      display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: var(--gutter); align-content: center;
+      padding: 120px var(--gutter);
+    }
+    .about .label { grid-column: 1 / span 3; padding-top: 0.5em; }
+    .about .body { grid-column: 4 / span 7; display: flex; flex-direction: column; gap: 1.1em; }
+    .about .body p { font-size: clamp(1.15rem, 1.75vw, 1.7rem); line-height: 1.3; letter-spacing: -0.02em; font-weight: 400; max-width: 34em; }
+    .about .body a { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.12em; }
+    footer {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
+      padding: var(--gutter);
+    }
+    footer a:hover { opacity: 0.6; }
+
+    @media (max-width: 760px) {
+      header { grid-template-columns: 1fr auto; }
+      header nav { display: none; }
+      .intro-small { grid-template-columns: 1fr; row-gap: 14px; }
+      .about { grid-template-columns: 1fr; row-gap: 20px; }
+      .about .label, .about .body { grid-column: 1; }
+      .app-foot { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .track.qs video { height: 46svh; }
+      .track.studiolo video { height: 28svh; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      body, .app-title, .app-foot { transition: none; }
+      .big-name > span, .intro-small p { transition: none; transform: none; opacity: 1; }
+      .hole, .veil { display: none; }
+      .app { height: auto; }
+      .stage { position: relative; }
+      .window { position: relative; clip-path: none; height: 100%; overflow-x: auto; }
+      .track { position: relative; top: auto; transform: none; height: 100%; padding: 0 var(--gutter); }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mono">
+    <a href="#top" aria-label="Mer So Studio, top of page">Mer So Studio</a>
+    <nav aria-label="Sections"><a href="#qs">Work</a><a href="#about">About</a></nav>
+    <a class="contact" href="mailto:hello@mersostudio.com">Contact</a>
+  </header>
+
+  <div class="hole" aria-hidden="true"></div>
+
+  <main id="top">
+    <section class="intro" data-bg="stone" data-fg="ink">
+      <h1 class="big-name" id="big-name" aria-label="Mer So"><span aria-hidden="true">Mer S<span id="the-o">o</span></span></h1>
+    </section>
+
+    <section class="app" id="qs" data-bg="blue" data-fg="stone" aria-labelledby="qs-h">
+      <div class="stage">
+        <div class="window">
+          <div class="track qs" role="img" aria-label="Quiet Surface on iPhone: rating the week, keeping ideas, what keeps coming up, and the weekly reminder on the home screen.">
+            <video src="assets/qs-clip-1.mp4" poster="assets/qs-clip-1.jpg" muted loop playsinline></video>
+            <video src="assets/qs-clip-2.mp4" poster="assets/qs-clip-2.jpg" muted loop playsinline></video>
+            <video src="assets/qs-clip-3.mp4" poster="assets/qs-clip-3.jpg" muted loop playsinline></video>
+            <video src="assets/qs-clip-4.mp4" poster="assets/qs-clip-4.jpg" muted loop playsinline></video>
+          </div>
+          <div class="veil"></div>
+        </div>
+        <div class="app-title"><h2 id="qs-h">Quiet Surface</h2><span class="mono">01</span></div>
+        <div class="app-foot">
+          <p class="small">A weekly reflection app</p>
+          <p class="right mono"><span>iPhone · Free</span><a href="https://quietsurface.app" target="_blank" rel="noopener">quietsurface.app ↗</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="app" id="studiolo" data-bg="stone" data-fg="ink" data-open-fg="stone" aria-labelledby="st-h">
+      <div class="stage">
+        <div class="window">
+          <div class="track studiolo" role="img" aria-label="Studiolo: saved images sorted out of the inbox, a page saved from the browser, searching by colour, and notes on a canvas.">
+            <video src="assets/inbox-sort.mp4" poster="assets/inbox-sort-poster.jpg" muted loop playsinline></video>
+            <video src="assets/clip-from-browser.mp4" poster="assets/clip-from-browser-poster.jpg" muted loop playsinline></video>
+            <video src="assets/colour-search.mp4" poster="assets/colour-search-poster.jpg" muted loop playsinline></video>
+            <video src="assets/canvas-notes.mp4" poster="assets/canvas-notes-poster.jpg" muted loop playsinline></video>
+          </div>
+          <div class="veil"></div>
+        </div>
+        <div class="app-title"><h2 id="st-h">Studiolo</h2><span class="mono">02</span></div>
+        <div class="app-foot">
+          <p class="small">A visual reference app</p>
+          <p class="right mono"><span>Mac · Private alpha</span><a href="https://www.withstudiolo.com" target="_blank" rel="noopener">Join the waitlist ↗</a></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="about" id="about" data-bg="ink" data-fg="stone" aria-labelledby="about-h">
+      <h2 class="label mono" id="about-h">About</h2>
+      <div class="body">
+        <p>Mer So is the independent design studio of <a href="https://jenmurse.com" target="_blank" rel="noopener">Jen Murse</a>, creating thoughtful products for everyday life, drawing on more than 20 years of experience designing across digital and physical mediums.</p>
+        <p>The work begins with small moments that deserve more attention, like a few quiet minutes of reflection at the end of the week or the pile of inspiration saved for later. The intention is to make the everyday worth noticing, whether on a screen, on paper, or in something you can hold.</p>
+        <p>Everything is made at a small scale, with care for the people who use it.</p>
+      </div>
+      <footer class="mono">
+        <span>© 2026 · Mer So Studio, LLC</span>
+        <a href="mailto:hello@mersostudio.com">hello@mersostudio.com</a>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const C = { stone: '#f4f4f2', ink: '#121211', blue: '#2961F6' };
+    const body = document.body;
+    const clamp = (v) => Math.min(1, Math.max(0, v));
+    const lerp = (a, b, t) => a + (b - a) * t;
+    const easeIO = (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    // Fit the name to the page width
+    const name = document.getElementById('big-name');
+    const theO = document.getElementById('the-o');
+    let oGlyph = null; // the o's ink box, relative to its span: centre x, centre y from top, radius
+    const fit = () => {
+      const avail = document.documentElement.clientWidth - 2 * parseFloat(getComputedStyle(document.querySelector('.intro')).paddingLeft);
+      name.style.fontSize = '100px';
+      const w = name.firstElementChild.getBoundingClientRect().width;
+      const size = Math.floor(100 * avail / w * 1.02);
+      name.style.fontSize = size + 'px';
+      // Measure the o itself, so the disc fills exactly the letter
+      const ctx = document.createElement('canvas').getContext('2d');
+      ctx.font = `500 ${size}px Satoshi`;
+      const m = ctx.measureText('o');
+      oGlyph = {
+        cx: (m.actualBoundingBoxRight - m.actualBoundingBoxLeft) / 2,
+        cy: m.fontBoundingBoxAscent - (m.actualBoundingBoxAscent - m.actualBoundingBoxDescent) / 2,
+        r: Math.max(m.actualBoundingBoxRight + m.actualBoundingBoxLeft, m.actualBoundingBoxAscent + m.actualBoundingBoxDescent) / 2,
+      };
+    };
+
+    // Colour blocks: the page takes the colour of whatever is in the middle of the screen
+    const blocks = [...document.querySelectorAll('[data-bg]')];
+    const setColours = () => {
+      const mid = innerHeight * 0.5;
+      const atEnd = scrollY + innerHeight >= document.documentElement.scrollHeight - 4;
+      const cur = atEnd ? blocks[blocks.length - 1] : (blocks.find((b) => {
+        const r = b.getBoundingClientRect();
+        return r.top <= mid && r.bottom > mid;
+      }) || blocks[0]);
+      body.style.setProperty('--bg', C[cur.dataset.bg]);
+      body.style.setProperty('--fg', C[cur.dataset.fg]);
+    };
+
+    // One hole, start to finish
+    const hole = document.querySelector('.hole');
+    const header = document.querySelector('header');
+    const apps = [...document.querySelectorAll('.app')];
+    const placeHole = (cx, cy, r) => {
+      hole.style.transform = `translate3d(${cx - r}px, ${cy - r}px, 0) scale(${r / 100})`;
+    };
+    const run = () => {
+      const w = innerWidth, h = innerHeight;
+      const r0 = Math.min(w, h) * 0.21;          // the circle each app starts from
+      const r1 = Math.hypot(w, h) / 2;          // big enough to cover the corners
+      let pinned = null;
+      let covered = false;
+
+      apps.forEach((a) => {
+        const rect = a.getBoundingClientRect();
+        const isPinned = rect.top <= 0 && rect.bottom >= h;
+        const t = clamp(-rect.top / (rect.height - h));
+        const open = easeIO(clamp(t / 0.28));
+        const close = easeIO(clamp((t - 0.9) / 0.1));          // shrinks back to the hole at the end
+        const lift = clamp((t - 0.1) / 0.18) * (1 - close);
+        const slide = easeIO(clamp((t - 0.28) / 0.6));
+        const win = a.querySelector('.window');
+        const radius = isPinned ? lerp(lerp(r0, r1, open), r0, close) : 0;
+        win.style.clipPath = `circle(${radius}px at 50% 50%)`;
+        a.querySelector('.veil').style.opacity = String(1 - lift);
+        const track = a.querySelector('.track');
+        const items = track.children;
+        const first = items[0], last = items[items.length - 1];
+        const startX = w / 2 - (first.offsetLeft + first.offsetWidth / 2);
+        const endX = w / 2 - (last.offsetLeft + last.offsetWidth / 2);
+        track.style.transform = `translate3d(${lerp(startX, endX, slide)}px, -50%, 0)`;
+        if (a.dataset.openFg) a.querySelector('.stage').style.setProperty('--title', isPinned && open > 0.7 && close < 0.3 ? C[a.dataset.openFg] : C[a.dataset.fg]);
+        if (isPinned) pinned = a;
+        if (isPinned && open > 0.7 && close < 0.3) covered = true;
+      });
+
+      // over a full black circle, the header reads in stone
+      header.style.color = covered ? C.stone : '';
+      if (pinned || !oGlyph) { hole.style.transform = 'scale(0)'; return; }
+
+      const first = apps[0], last = apps[apps.length - 1];
+      const firstTop = first.offsetTop, lastEnd = last.offsetTop + last.offsetHeight - h;
+      if (scrollY < firstTop) {
+        // Over the intro: the o fills, then the disc travels to the middle of the screen
+        const o = theO.getBoundingClientRect();
+        const ox = o.left + oGlyph.cx, oy = o.top + oGlyph.cy;
+        const t = clamp(scrollY / firstTop);
+        const fill = easeIO(clamp(t / 0.3));
+        const travel = easeIO(clamp((t - 0.3) / 0.7));
+        placeHole(lerp(ox, w / 2, travel), lerp(oy, h / 2, travel), lerp(oGlyph.r * fill, r0, travel));
+      } else if (scrollY <= lastEnd) {
+        // Between apps: the hole waits in the middle while the next section arrives
+        placeHole(w / 2, h / 2, r0);
+      } else {
+        // After the last app: it closes up
+        const k = easeIO(clamp((scrollY - lastEnd) / (h * 0.6)));
+        placeHole(w / 2, h / 2, r0 * (1 - k));
+      }
+    };
+
+    // Clips play only while their section is on screen
+    if (!reduced) {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => e.target.querySelectorAll('video').forEach((v) => e.isIntersecting ? v.play().catch(() => {}) : v.pause()));
+      }, { threshold: 0.05 });
+      apps.forEach((a) => io.observe(a));
+    }
+
+    const onScroll = () => { setColours(); if (!reduced) run(); };
+    addEventListener('scroll', onScroll, { passive: true });
+    addEventListener('resize', () => { fit(); onScroll(); });
+    document.fonts.ready.then(() => { fit(); onScroll(); requestAnimationFrame(() => body.classList.add('loaded')); });
+    addEventListener('load', onScroll);
+    fit(); onScroll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mer So Studio — Mock F (panels)</title>
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #2961F6;
+      --stone: #f4f4f2;
+      --ink: #121211;
+      --font-sans: 'Satoshi', sans-serif;
+      --font-mono: 'DM Mono', monospace;
+      --gutter: clamp(16px, 2.6vw, 40px);
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: var(--ink); }
+    body { font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: clip; }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible, button:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+    img, video { display: block; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    .mono { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.1em; text-transform: uppercase; }
+
+    /* Three grounds, and the type that sits on each */
+    .on-blue  { --bg: var(--blue);  --text: var(--stone); }
+    .on-stone { --bg: var(--stone); --text: var(--blue); }
+    .on-ink   { --bg: var(--ink);   --text: var(--stone); }
+
+    /* ── Header: takes the colours of the panel beneath it ── */
+    .bar {
+      position: fixed; inset: 0 0 auto 0; z-index: 30;
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      padding: var(--gutter);
+      color: var(--stone);
+      transition: color 0.4s;
+    }
+    .bar nav { justify-self: center; display: flex; gap: 24px; }
+    .bar .contact { justify-self: end; }
+    .bar a:hover { opacity: 0.6; }
+
+    /* ── Panels: each one holds still while the next slides up over it ── */
+    .panel {
+      position: sticky; top: 0;
+      height: 100svh;
+      background: var(--bg); color: var(--text);
+      overflow: hidden;
+    }
+    .panel-inner {
+      height: 100%;
+      display: flex; flex-direction: column;
+      transform-origin: 50% 0;
+      will-change: transform;
+    }
+    .sub { color: color-mix(in srgb, var(--text) 72%, transparent); }
+    .rule { background: color-mix(in srgb, var(--text) 35%, transparent); }
+
+    /* Panel 1: the name, sized to the page */
+    .masthead { padding-top: clamp(72px, 11vh, 110px); }
+    .row { position: relative; display: flex; align-items: flex-end; padding: 0 var(--gutter); }
+    .row .line-rule { position: absolute; left: 0; right: 0; bottom: 0; height: 1px; transform-origin: left; transform: scaleX(0); transition: transform 1.4s var(--ease); }
+    .row.in .line-rule { transform: scaleX(1); }
+    .row.right { justify-content: flex-end; }
+    .row .label { position: absolute; top: 1.1em; opacity: 0; transition: opacity 0.8s 0.5s; }
+    .row.in .label { opacity: 1; }
+    .row:not(.right) .label { right: var(--gutter); }
+    .row.right .label { left: var(--gutter); }
+    .giant, .name {
+      line-height: 0.84; letter-spacing: -0.045em; font-weight: 500; white-space: nowrap;
+      clip-path: inset(-40% -20% 0 -20%); padding: 0 0.02em 0.05em;
+    }
+    .giant > span, .name > span { display: inline-block; transform: translateY(110%); transition: transform 1.2s var(--ease); }
+    .in .giant > span, .in .name > span { transform: none; }
+    .tagline { margin-top: auto; padding: 0 var(--gutter) clamp(28px, 6vh, 56px); display: flex; justify-content: space-between; align-items: end; gap: var(--gutter); }
+    .tagline .big { font-size: clamp(1.6rem, 3.6vw, 4rem); line-height: 1.02; letter-spacing: -0.035em; font-weight: 500; max-width: 13em; }
+    .tagline .small { font-size: clamp(0.95rem, 1.3vw, 1.2rem); max-width: 18em; text-align: right; }
+
+    /* Panel 2: about */
+    .about { justify-content: center; padding: 0 var(--gutter); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 3fr); gap: var(--gutter); align-content: center; }
+    .about .body { display: flex; flex-direction: column; gap: 1.1em; max-width: 36em; }
+    .about .body p { font-size: clamp(1.15rem, 1.75vw, 1.7rem); line-height: 1.3; letter-spacing: -0.02em; font-weight: 400; }
+    .about .mono { padding-top: 1em; }
+    .about a { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.12em; }
+
+    /* Panels 3 and 4: an app each */
+    .app { padding-top: clamp(64px, 10vh, 100px); justify-content: center; gap: clamp(18px, 3vh, 32px); }
+    .app .head { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px var(--gutter); padding: 0 var(--gutter); }
+    .app .head:hover .name > span { transform: translateX(0.03em); }
+    .app .name { grid-column: 1 / -1; font-size: min(13vw, 22vh); }
+    .app .line { font-size: clamp(1rem, 1.5vw, 1.4rem); letter-spacing: -0.01em; }
+    .app .meta { display: flex; gap: 28px; white-space: nowrap; }
+    .app .go { border-bottom: 1px solid currentColor; }
+    .strip { overflow: hidden; }
+    .strip-track { display: flex; gap: 14px; width: max-content; animation: run 60s linear infinite; padding-left: var(--gutter); }
+    .strip:hover .strip-track { animation-play-state: paused; }
+    .strip img { height: min(30vw, 40vh); width: auto; }
+    .strip.studiolo img { height: min(21vw, 30vh); }
+    @keyframes run { to { transform: translateX(-50%); } }
+
+    .riso-row { padding: 0 var(--gutter); display: flex; justify-content: space-between; }
+    [data-riso="off"] .riso-row { display: none; }
+
+    /* Footer: small, like the live site */
+    footer {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap;
+      padding: var(--gutter);
+    }
+    footer a:hover { opacity: 0.6; }
+
+
+    @media (max-width: 760px) {
+      .bar { grid-template-columns: 1fr 1fr; }
+      .bar nav { display: none; }
+      .about { grid-template-columns: 1fr; }
+      .tagline { flex-direction: column; align-items: start; }
+      .tagline .small { text-align: left; }
+      .app .head { grid-template-columns: 1fr; }
+      .app .meta { flex-wrap: wrap; gap: 8px 20px; }
+      .row { flex-direction: column; align-items: flex-start; }
+      .row.right { align-items: flex-end; }
+      .row .label { position: static; display: block; padding: 10px 0 6px; }
+      .strip img { height: 38vh; }
+      .strip.studiolo img { height: 24vh; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; animation: none !important; }
+      .giant > span, .name > span { transform: none; }
+      .row .line-rule { transform: scaleX(1); }
+      .row .label { opacity: 1; }
+      .strip { overflow-x: auto; }
+    }
+  </style>
+</head>
+<body data-riso="off">
+
+  <header class="bar mono">
+    <a href="#top" aria-label="Mer So Studio, top of page">Mer So Studio</a>
+    <nav aria-label="Sections"><a href="#qs">Work</a><a href="#about">About</a></nav>
+    <a class="contact" href="mailto:hello@mersostudio.com">Contact</a>
+  </header>
+
+  <main id="top">
+    <h1 class="sr-only">Mer So Studio</h1>
+
+    <section class="panel on-blue" aria-label="Mer So Studio">
+      <div class="panel-inner">
+        <div class="masthead" aria-hidden="true">
+          <div class="row reveal"><div class="giant" data-fit><span>Mer So</span></div><span class="label mono sub">A design and product studio</span><span class="line-rule rule"></span></div>
+          <div class="row right reveal"><div class="giant" data-fit-match><span>Studio</span></div><span class="label mono sub">San Francisco</span><span class="line-rule rule"></span></div>
+        </div>
+        <div class="tagline">
+          <p class="big">Things that make the everyday worth noticing.</p>
+          <p class="small sub">Based in San Francisco</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel on-stone" id="about" aria-label="About">
+      <div class="panel-inner about">
+        <span class="mono sub">( About )</span>
+        <div class="body">
+          <p>Mer So is the independent design studio of <a href="https://jenmurse.com" target="_blank" rel="noopener">Jen Murse</a>, creating thoughtful products for everyday life, drawing on more than 20 years of experience designing across digital and physical mediums.</p>
+          <p>The work begins with small moments that deserve more attention, like a few quiet minutes of reflection at the end of the week or the pile of inspiration saved for later. The intention is to make the everyday worth noticing, whether on a screen, on paper, or in something you can hold.</p>
+          <p>Everything is made at a small scale, with care for the people who use it.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel on-ink" id="qs" aria-labelledby="qs-h">
+      <div class="panel-inner app reveal">
+        <a class="head" href="https://quietsurface.app" target="_blank" rel="noopener">
+          <h2 class="name" id="qs-h"><span>Quiet Surface</span></h2>
+          <p class="line">A few quiet minutes at the end of each week.</p>
+          <p class="meta mono"><span class="sub">iPhone · Free</span><span class="go">quietsurface.app ↗</span></p>
+        </a>
+        <div class="strip" role="img" aria-label="Quiet Surface's App Store screens: the weekly surface, patterns over time, themes in your own words, reflection and ideas, and dark mode.">
+          <div class="strip-track" data-dupe>
+            <img src="assets/qs-frame-01-surface.jpg" alt=""><img src="assets/qs-frame-02-patterns.jpg" alt=""><img src="assets/qs-frame-03-themes.jpg" alt=""><img src="assets/qs-frame-04-reflect.jpg" alt=""><img src="assets/qs-frame-05-dark.jpg" alt="">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel on-stone" id="studiolo" aria-labelledby="st-h">
+      <div class="panel-inner app reveal">
+        <a class="head" href="https://www.withstudiolo.com" target="_blank" rel="noopener">
+          <h2 class="name" id="st-h"><span>Studiolo</span></h2>
+          <p class="line">Everything you saved, in its right place.</p>
+          <p class="meta mono"><span class="sub">Mac · Private alpha</span><span class="go">Join the waitlist ↗</span></p>
+        </a>
+        <div class="strip studiolo" role="img" aria-label="Studiolo on a Mac: the library, colour search, related results, notes on the canvas, saving from the browser and from an iPhone.">
+          <div class="strip-track" data-dupe>
+            <img src="assets/st-still-library-scroll.jpg" alt=""><img src="assets/st-still-colour-search.jpg" alt=""><img src="assets/st-still-canvas-notes.jpg" alt=""><img src="assets/st-still-search-related.jpg" alt=""><img src="assets/st-still-clip-from-browser.jpg" alt=""><img src="assets/st-still-iphone-share.jpg" alt="">
+          </div>
+        </div>
+        <p class="riso-row mono sub"><span>Riso prints and calendars</span><span>Later</span></p>
+      </div>
+      <footer class="mono">
+        <span>© 2026 · Mer So Studio, LLC</span>
+        <a href="mailto:hello@mersostudio.com">hello@mersostudio.com</a>
+      </footer>
+    </section>
+  </main>
+
+  <script>
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const clamp = (v) => Math.min(1, Math.max(0, v));
+
+    // Size the name to the page width
+    const fit = () => {
+      const avail = document.documentElement.clientWidth - 2 * parseFloat(getComputedStyle(document.querySelector('.row')).paddingLeft);
+      let size = 0;
+      document.querySelectorAll('[data-fit]').forEach((el) => {
+        el.style.fontSize = '100px';
+        const w = el.querySelector('span').getBoundingClientRect().width;
+        size = Math.min(Math.floor(100 * avail / w * 0.98), Math.floor(innerHeight * 0.36));
+        el.style.fontSize = size + 'px';
+      });
+      document.querySelectorAll('[data-fit-match]').forEach((el) => { el.style.fontSize = size + 'px'; });
+    };
+    document.fonts.ready.then(fit);
+    addEventListener('resize', fit);
+    fit();
+
+    // Reveal as each panel arrives
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        setTimeout(() => e.target.classList.add('in'), e.target.dataset.delay || 0);
+        io.unobserve(e.target);
+      });
+    }, { threshold: 0.4 });
+    document.querySelectorAll('.reveal').forEach((el, i) => {
+      if (el.closest('.masthead')) el.dataset.delay = 120 + i * 180;
+      reduced ? el.classList.add('in') : io.observe(el);
+    });
+
+    // As a panel slides over the one before, the one beneath settles back a little
+    const panels = [...document.querySelectorAll('.panel')];
+    const bar = document.querySelector('.bar');
+    const onScroll = () => {
+      panels.forEach((p, i) => {
+        const next = panels[i + 1];
+        if (!next) return;
+        const cover = clamp(1 - next.getBoundingClientRect().top / innerHeight);
+        if (!reduced) {
+          const inner = p.querySelector('.panel-inner');
+          inner.style.transform = `scale(${1 - cover * 0.06}) translateY(${cover * -4}vh)`;
+          inner.style.opacity = String(1 - cover * 0.5);
+        }
+      });
+      // header takes the text colour of the panel at the top of the screen
+      const top = panels.filter((p) => p.getBoundingClientRect().top <= 30).pop() || panels[0];
+      bar.style.color = getComputedStyle(top).getPropertyValue('--text');
+    };
+    addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+
+    // Strips loop seamlessly: double their contents
+    document.querySelectorAll('[data-dupe]').forEach((t) => { if (!reduced) t.innerHTML += t.innerHTML; });
+  </script>
+</body>
+</html>
