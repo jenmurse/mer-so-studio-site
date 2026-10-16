@@ -1,0 +1,5 @@
+# The studio site on Cloudflare Pages (project `mersostudio`). scripts/deploy.sh copies only the
+# public files into .deploy/ (never mocks/, README or the desktop font files), then deploys that.
+name = "mersostudio"
+pages_build_output_dir = ".deploy"
+compatibility_date = "2026-10-01"

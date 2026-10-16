@@ -20,7 +20,7 @@ hold. Hand-written HTML, CSS and a small amount of JavaScript, with no framework
 | **Scripts** | `main.js` — no dependencies |
 | **Type** | Satoshi (Fontshare) and DM Mono (Google Fonts), with local fallbacks in `fonts/` |
 | **Spacing** | A fixed scale (`--space-28`, `--space-40`, `--space-80`…) — never ad-hoc values |
-| **Hosting** | Vercel — pushes to `main` deploy automatically |
+| **Hosting** | Cloudflare Pages (project `mersostudio`) — deploy with `bash scripts/deploy.sh`; DNS on Cloudflare, registered at name.com |
 
 ## Layout
 
@@ -31,6 +31,8 @@ main.js
 fonts/          # local fallbacks
 favicon.svg
 OG_image_mer-so.png   # 1200×630 social card
+scripts/deploy.sh     # copies the public files into .deploy/ and deploys them
+wrangler.toml
 ```
 
 ## Running it

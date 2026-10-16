@@ -1,3 +1,5 @@
 .DS_Store
 *.ai
 mocks/assets/
+.deploy/
+.wrangler/
